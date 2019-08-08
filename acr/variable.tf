@@ -1,0 +1,1 @@
+variable "SPN_OBJECT_ID" {}
