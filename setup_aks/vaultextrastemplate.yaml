@@ -1,0 +1,20 @@
+server:
+  ha:
+    config: |
+      ui = true
+
+      listener "tcp" {
+        tls_disable = 1
+        address = "[::]:8200"
+        cluster_address = "[::]:8201"
+      }
+      storage "consul" {
+        path = "vault"
+        address = "HOST_IP:8500"
+      }
+      seal "azurekeyvault" {
+        tenant_id      = "94a8b28b-7de6-4eba-af01-5dfd2c03c072"
+        client_id      = "${client_id}"
+        vault_name     = "k8skv"
+        key_name       = "vaultunselkey"
+      }

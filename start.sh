@@ -12,6 +12,11 @@ destroy_all()
     terraform destroy
     popd
 
+    pushd setup_aks
+    terraform init
+    terraform destroy
+    popd
+
     pushd aks
     terraform init
     terraform destroy
@@ -33,10 +38,16 @@ then
     source kubehealth.sh
 fi
 
-if [ "$1" = "acr" ] && [ "$2" = "apply" ]
-then
-    source imagebuild.sh
-fi
+# if [ "$1" = "setup_aks" ] && [ "$2" = "apply" ]
+# then
+#     source imagebuild.sh
+# fi
+
+
+# if [ "$1" = "acr" ] && [ "$2" = "apply" ]
+# then
+#     source imagebuild.sh
+# fi
 
 popd
 

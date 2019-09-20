@@ -11,4 +11,4 @@ kubectl create clusterrolebinding kubernetes-dashboard \
 --clusterrole=cluster-admin \
 --serviceaccount=kube-system:kubernetes-dashboard
 
-nohup az aks browse -g $group -n $name &
+# nohup  az aks browse -g $group -n $name &

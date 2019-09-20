@@ -1,27 +1,3 @@
-terraform {
-  backend "local" {
-    path = "../tf_state/kube.tfstate"
-  }
-}
-
-data "terraform_remote_state" "aks" {
-  backend = "local"
-
-  config = {
-    path = "${path.module}/../tf_state/aks.tfstate"
-  }
-}
-
-provider "kubernetes" {
-  host     = "${data.terraform_remote_state.aks.outputs.host}"
-  # username = "${data.terraform_remote_state.aks.outputs.username}"
-  # password = "${data.terraform_remote_state.aks.outputs.password}"
-
-  client_certificate     = "${data.terraform_remote_state.aks.outputs.client_certificate}"
-  client_key             = "${data.terraform_remote_state.aks.outputs.client_key}"
-  cluster_ca_certificate = "${data.terraform_remote_state.aks.outputs.cluster_ca_certificate}"
-}
-
 resource "kubernetes_service_account" "tiller" {
   metadata {
     name      = "tiller"
@@ -49,6 +25,7 @@ resource "kubernetes_cluster_role_binding" "tiller" {
     namespace = "kube-system"
   }
 }
+
 
 provider "helm" {
   install_tiller  = true

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: az-cli
+  labels:
+    aadpodidbinding: app
+spec:
+  containers:
+  - name: az-cli
+    image: microsoft/azure-cli:latest
+    # command: [ "/bin/bash", "-c", "--" ]
+    # args: [ "while true; do sleep 30; done;" ]
+    command: [ "tail" ]
+    args: [ "-f", "/dev/null" ]

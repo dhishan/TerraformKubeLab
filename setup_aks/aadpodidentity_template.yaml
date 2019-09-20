@@ -1,0 +1,16 @@
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: ${aad_id_name}
+spec:
+  type: 0
+  ResourceID: ${pods_resource_id}
+  ClientID: ${pods_client_id}
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: demo1-azure-identity-binding
+spec:
+  AzureIdentity: ${aad_id_name}
+  Selector: ${label}

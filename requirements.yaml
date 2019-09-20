@@ -1,0 +1,5 @@
+dependencies:
+- name: mongodb
+  version: 7.0.2
+  # repository: https://github.com/helm/charts/tree/master/stable/mongodb
+  repository: https://kubernetes-charts.storage.googleapis.com/
