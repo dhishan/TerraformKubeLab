@@ -11,24 +11,28 @@ terraform {
 }
 
 provider "azurerm" {
-
 }
 
-resource "azurerm_resource_group" "KubeLab" {
-  name     = var.rgName
-  location = var.location
+data "terraform_remote_state" "rg" {
+  backend = "azurerm"
+  config = {
+    resource_group_name  = "statefiles-store-rg"
+    storage_account_name = "statefilesstore"
+    container_name       = "cluster"
+    key                  = "rg.tfstate"
+  }
 }
 
 resource "azurerm_virtual_network" "kubevnet" {
   name                = "${var.aksName}-network"
-  location            = "${azurerm_resource_group.KubeLab.location}"
-  resource_group_name = "${azurerm_resource_group.KubeLab.name}"
-  address_space       = ["10.1.0.0/16"]
+  resource_group_name      = "${data.terraform_remote_state.rg.outputs.rg_name}"
+  location                 = "${data.terraform_remote_state.rg.outputs.rg_location}"
+  address_space       = ["10.1.0.0/16","10.144.1.0/24"]
 }
 
-resource "azurerm_subnet" "internal" {
+resource "azurerm_subnet" "lbsubnet" {
   name                 = "lbsubnet"
-  resource_group_name  = "${azurerm_resource_group.KubeLab.name}"
+  resource_group_name      = "${data.terraform_remote_state.rg.outputs.rg_name}"
   address_prefix       = "10.1.1.0/24"
   virtual_network_name = "${azurerm_virtual_network.kubevnet.name}"
 
@@ -36,20 +40,20 @@ resource "azurerm_subnet" "internal" {
   # route_table_id = "${azurerm_route_table.example.id}"
 }
 
-# resource "azurerm_subnet" "internal" {
-#   name                 = "internal"
-#   resource_group_name  = "${azurerm_resource_group.KubeLab.name}"
-#   address_prefix       = "10.144.1.0/24"
-#   virtual_network_name = "${azurerm_virtual_network.kubevnet.name}"
+resource "azurerm_subnet" "internal" {
+  name                 = "internal"
+  resource_group_name      = "${data.terraform_remote_state.rg.outputs.rg_name}"
+  address_prefix       = "10.144.1.0/24"
+  virtual_network_name = "${azurerm_virtual_network.kubevnet.name}"
 
-#   # # this field is deprecated and will be removed in 2.0 - but is required until then
-#   # route_table_id = "${azurerm_route_table.example.id}"
-# }
+  # # this field is deprecated and will be removed in 2.0 - but is required until then
+  # route_table_id = "${azurerm_route_table.example.id}"
+}
 
 resource "azurerm_kubernetes_cluster" "k8s" {
   name                = var.aksName
-  location            = var.location
-  resource_group_name = "${azurerm_resource_group.KubeLab.name}"
+  location            = "${data.terraform_remote_state.rg.outputs.rg_location}"
+  resource_group_name = "${data.terraform_remote_state.rg.outputs.rg_name}"
   dns_prefix          = "${var.aksName}dns"
 
   agent_pool_profile {
@@ -100,13 +104,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 #   value = "${azurerm_kubernetes_cluster.k8s.kube_config_raw}"
 # }
 
-output "rg_name" {
-  value = azurerm_resource_group.KubeLab.name
-}
 
-output "rg_location" {
-  value = azurerm_resource_group.KubeLab.location
-}
 
 output "aks_id" {
   value = azurerm_kubernetes_cluster.k8s.id

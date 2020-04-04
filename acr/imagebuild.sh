@@ -5,3 +5,5 @@ group=KubeLab
 # az acr build --registry $ACR_NAME -g $group --file node/frontend/Dockerfile --image smilr/frontend https://github.com/benc-uk/smilr.git
 
 # az acr repository list -g $group --name $ACR_NAME -o table
+
+az configure --defaults acr=$ACR_NAME

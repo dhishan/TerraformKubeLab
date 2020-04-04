@@ -24,7 +24,7 @@ data "terraform_remote_state" "rg" {
     resource_group_name  = "statefiles-store-rg"
     storage_account_name = "statefilesstore"
     container_name       = "cluster"
-    key                  = "aks.tfstate"
+    key                  = "rg.tfstate"
   }
 }
 
@@ -37,7 +37,7 @@ resource "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_role_assignment" "acrpullrole" {
-  scope = data.terraform_remote_state.rg.outputs.aks_id
+  scope = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
   principal_id = var.SPN_OBJECT_ID
 }

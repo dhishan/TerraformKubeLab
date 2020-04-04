@@ -12,3 +12,4 @@ kubectl create clusterrolebinding kubernetes-dashboard \
 --serviceaccount=kube-system:kubernetes-dashboard
 
 # nohup  az aks browse -g $group -n $name &
+az aks browse -g KubeLab -n akslab
